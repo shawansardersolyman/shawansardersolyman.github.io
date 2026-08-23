@@ -47,34 +47,3 @@ footer{border-top:1px solid var(--line);padding:25px 5vw;display:flex;justify-co
  footer{padding:20px;flex-direction:column;gap:7px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{transition:none}.achievement-card:hover,.build-card:hover,.social:hover{transform:none}}
-
-
-/* ===== V7 Gallery ===== */
-.achievement-grid,.place-grid,.build-grid{
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-}
-.v7-lightbox{
- position:fixed;inset:0;background:rgba(0,0,0,.94);
- z-index:999;display:flex;align-items:center;justify-content:center;
- opacity:0;pointer-events:none;transition:.25s;padding:20px;
-}
-.v7-lightbox.show{opacity:1;pointer-events:auto}
-.v7-content{text-align:center}
-.v7-content img{max-width:90vw;max-height:82vh;border-radius:16px}
-.v7-caption{color:#fff;margin-top:15px;font-size:16px}
-.v7-caption small{display:block;color:#aaa;margin-top:5px}
-.v7-close,.v7-prev,.v7-next{
- position:absolute;background:none;border:0;color:#fff;
- font-size:42px;cursor:pointer;
-}
-.v7-close{top:20px;right:25px}
-.v7-prev{left:25px}
-.v7-next{right:25px}
-
-/* v7.1 rendering safety */
-.v7-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.25s;padding:20px}
-.v7-lightbox.show{opacity:1;pointer-events:auto}
-.v7-content{text-align:center}.v7-content img{max-width:92vw;max-height:82vh;border-radius:16px}
-.v7-caption{color:#fff;margin-top:12px}
-.v7-close,.v7-prev,.v7-next{position:absolute;background:none;border:0;color:#fff;font-size:42px}
-.v7-close{right:25px;top:20px}.v7-prev{left:25px}.v7-next{right:25px}

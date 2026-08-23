@@ -17,3 +17,12 @@ achievementInfo: {
 ```
 
 Gallery: first 9 images, View all, fullscreen viewer, Previous/Next, ESC, keyboard arrows, mobile swipe, lazy loading, responsive layout.
+
+
+## Custom logo
+Put your preferred logo here:
+`assets/logo.png`
+
+The header will use it automatically. A transparent PNG is recommended.
+You can also change the path in `data.js`:
+`logo: "assets/logo.png"`

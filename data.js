@@ -4,7 +4,9 @@
    ========================================================= */
 
 const SITE = {
-  name: "Shawan",
+  
+  logo: "assets/logo.png",
+name: "Shawan",
   fullName: "Shawan Sarder Solyman",
 
   heroIntro:

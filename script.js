@@ -148,3 +148,4 @@ document.addEventListener("click", e => {
   requestAnimationFrame(()=>box.classList.add("show"));
   box.onclick = ev => { if(ev.target===box || ev.target.tagName==="BUTTON") box.remove(); };
 });
+});

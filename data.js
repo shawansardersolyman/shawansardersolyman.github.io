@@ -60,7 +60,7 @@ name: "Shawan",
 
   /* Put a real URL only for platforms you want to show. */
   socials: [
-    { name: "Facebook", icon: "facebook", url: "" },
+    { name: "Facebook", icon: "facebook", url: "https://www.facebook.com/ShawanSarderSolyman" },
     { name: "Instagram", icon: "instagram", url: "" },
     { name: "LinkedIn", icon: "linkedin", url: "" },
     { name: "GitHub", icon: "github", url: "" },

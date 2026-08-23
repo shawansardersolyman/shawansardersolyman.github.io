@@ -26,6 +26,20 @@ const SITE = {
   /* Awards, competitions, certificates, recognitions */
   achievements: [], // Auto-loaded from assets/awards/
 
+  /* Optional image titles. Match the exact filename. */
+  achievementInfo: {
+    // "award-01.jpg": { title: "National Robotics Competition", meta: "2023 · 1st Place" }
+  },
+  momentInfo: {
+    // "moment-01.jpg": { title: "A memorable day", meta: "2024" }
+  },
+  placeInfo: {
+    // "place-01.jpg": { title: "Cox's Bazar", meta: "Travel memory" }
+  },
+  buildInfo: {
+    // "project-01.jpg": { title: "Line Following Robot", meta: "Robotics · 2023" }
+  },
+
   /* Personal, event, robotics and memorable photos */
   moments: [], // Auto-loaded from assets/moments/
 

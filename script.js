@@ -52,43 +52,48 @@ $("#heroYear").textContent = new Date().getFullYear();
 $("#year").textContent = new Date().getFullYear();
 
 function media(image, label="ADD PHOTO") {
-  return image
-    ? `<img src="${esc(image)}" alt="" loading="lazy">`
-    : `<div class="placeholder"><span>${label}</span></div>`;
+  return image ? `<img src="${esc(image)}" alt="" loading="lazy">` : `<div class="placeholder"><span>${label}</span></div>`;
 }
 
-$("#storyList").innerHTML = SITE.story.map((x,i)=>`
-  <article class="story-item reveal">
-    <span class="story-no">${String(i+1).padStart(2,"0")}</span>
-    <span class="story-year">${esc(x.year)}</span>
-    <div><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></div>
-  </article>`).join("");
+/* V7 visual gallery system */
+const GALLERY_CONFIG={
+  achievements:{folder:"assets/awards/",prefix:"award-",max:100,container:"#achievementGrid",info:"achievementInfo"},
+  moments:{folder:"assets/moments/",prefix:"moment-",max:200,container:"#momentGrid",info:"momentInfo"},
+  places:{folder:"assets/places/",prefix:"place-",max:100,container:"#placeGrid",info:"placeInfo"},
+  builds:{folder:"assets/builds/",prefix:"project-",max:100,container:"#buildGrid",info:"buildInfo"}
+};
+async function findImages(cfg){
+  const out=[];
+  for(let i=1;i<=cfg.max;i++){
+    const n=String(i).padStart(2,"0"); let found="";
+    for(const ext of ["jpg","jpeg","png","webp"]){
+      const url=`${cfg.folder}${cfg.prefix}${n}.${ext}`;
+      const ok=await new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(true);img.onerror=()=>resolve(false);img.src=url+"?v="+Date.now()});
+      if(ok){found=url;break;}
+    }
+    if(found) out.push(found); else if(i>1) break;
+  }
+  return out;
+}
+function galleryInfo(section,file){const cfg=GALLERY_CONFIG[section];const map=SITE[cfg.info]||{};return map[file.split("/").pop()]||{};}
+const galleryState={items:[],section:"",index:0};
+function ensureLightbox(){
+  if($("#v7Lightbox")) return;
+  document.body.insertAdjacentHTML("beforeend",`<div class="v7-lightbox" id="v7Lightbox" aria-hidden="true"><button class="v7-lb-close" id="v7LbClose" aria-label="Close">×</button><button class="v7-lb-arrow v7-lb-prev" id="v7LbPrev" aria-label="Previous">‹</button><div class="v7-lb-content"><img id="v7LbImage" alt=""><div class="v7-lb-caption"><strong id="v7LbTitle"></strong><span id="v7LbMeta"></span></div></div><button class="v7-lb-arrow v7-lb-next" id="v7LbNext" aria-label="Next">›</button></div>`);
+  $("#v7LbClose").onclick=closeLightbox;$("#v7LbPrev").onclick=()=>moveLightbox(-1);$("#v7LbNext").onclick=()=>moveLightbox(1);
+  $("#v7Lightbox").onclick=e=>{if(e.target.id==="v7Lightbox")closeLightbox()};
+  document.addEventListener("keydown",e=>{if(!$("#v7Lightbox")?.classList.contains("open"))return;if(e.key==="Escape")closeLightbox();if(e.key==="ArrowLeft")moveLightbox(-1);if(e.key==="ArrowRight")moveLightbox(1)});
+  let sx=0;$("#v7Lightbox").addEventListener("touchstart",e=>sx=e.changedTouches[0].screenX,{passive:true});$("#v7Lightbox").addEventListener("touchend",e=>{const dx=e.changedTouches[0].screenX-sx;if(Math.abs(dx)>45)moveLightbox(dx<0?1:-1)},{passive:true});
+}
+function openLightbox(items,section,index){ensureLightbox();galleryState.items=items;galleryState.section=section;galleryState.index=index;updateLightbox();$("#v7Lightbox").classList.add("open");$("#v7Lightbox").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+function updateLightbox(){const file=galleryState.items[galleryState.index],info=galleryInfo(galleryState.section,file);$("#v7LbImage").src=file;$("#v7LbImage").alt=info.title||"";$("#v7LbTitle").textContent=info.title||"";$("#v7LbMeta").textContent=info.meta||info.text||info.note||"";$("#v7LbTitle").style.display=info.title?"block":"none";$("#v7LbMeta").style.display=(info.meta||info.text||info.note)?"block":"none";}
+function moveLightbox(delta){const n=galleryState.items.length;if(!n)return;galleryState.index=(galleryState.index+delta+n)%n;updateLightbox();}
+function closeLightbox(){const box=$("#v7Lightbox");if(box){box.classList.remove("open");box.setAttribute("aria-hidden","true")}document.body.style.overflow="";}
+function galleryCards(section,items){return items.map((file,i)=>{const info=galleryInfo(section,file),title=info.title||"",meta=info.meta||"";return `<button class="v7-gallery-item" type="button" aria-label="${esc(title||"Open image")}"><img src="${esc(file)}" alt="${esc(title)}" loading="lazy">${(title||meta)?`<span class="v7-gallery-overlay"><strong>${esc(title)}</strong><small>${esc(meta)}</small></span>`:""}</button>`}).join("");}
+function renderGallery(section,items){const cfg=GALLERY_CONFIG[section],el=$(cfg.container);if(!el)return;el.className="v7-gallery";el.innerHTML=galleryCards(section,items.slice(0,9));[...el.querySelectorAll(".v7-gallery-item")].forEach((b,i)=>b.onclick=()=>openLightbox(items,section,i));el.nextElementSibling?.classList.contains("v7-gallery-more")&&el.nextElementSibling.remove();if(items.length>9){const more=document.createElement("div");more.className="v7-gallery-more";more.innerHTML=`<button type="button">View all ${items.length}</button>`;more.querySelector("button").onclick=()=>{el.innerHTML=galleryCards(section,items);[...el.querySelectorAll(".v7-gallery-item")].forEach((b,i)=>b.onclick=()=>openLightbox(items,section,i));more.remove()};el.after(more);}}
+async function loadV7Galleries(){ensureLightbox();const results=await Promise.all(Object.entries(GALLERY_CONFIG).map(async([section,cfg])=>[section,await findImages(cfg)]));for(const [section,images] of results)renderGallery(section,images);}
 
-$("#achievementGrid").innerHTML = SITE.achievements.map((x,i)=>`
-  <article class="achievement-card reveal">
-    <div class="achievement-media">${media(x.image,"AWARD PHOTO")}</div>
-    <div class="achievement-body"><span>${esc(x.meta)}</span><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></div>
-  </article>`).join("");
-
-$("#momentGrid").innerHTML = SITE.moments.map((x,i)=>`
-  <button class="moment-card reveal" data-full="${esc(x.image)}" aria-label="Open ${esc(x.caption)}">
-    ${media(x.image,"MOMENT")}
-    <span>${esc(x.caption)}</span>
-  </button>`).join("");
-
-$("#placeGrid").innerHTML = SITE.places.map(x=>`
-  <article class="place-card reveal">
-    <div class="place-media">${media(x.image,"TRAVEL PHOTO")}</div>
-    <div><small>MEMORY FROM</small><h3>${esc(x.place)}</h3><p>${esc(x.note)}</p></div>
-  </article>`).join("");
-
-$("#buildGrid").innerHTML = SITE.builds.map(x=>`
-  <article class="build-card reveal">
-    <div class="build-media">${media(x.image,"PROJECT PHOTO")}</div>
-    <div class="build-body"><small>${esc(x.type)}</small><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></div>
-  </article>`).join("");
-
-$("#nowList").innerHTML = SITE.now.map(x=>`<div><span>↗</span>${esc(x)}</div>`).join("");
+loadV7Galleries();
 
 const icons = {
  facebook:'<svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.6-1.6h1.7V3.8c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H7.7v3h2.7v8h3.1Z"/></svg>',
@@ -138,15 +143,6 @@ window.addEventListener("pointermove", e => {
   glow.style.left = e.clientX + "px"; glow.style.top = e.clientY + "px";
 });
 
-document.addEventListener("click", e => {
-  const card = e.target.closest(".moment-card");
-  if(!card || !card.dataset.full) return;
-  const box = document.createElement("div");
-  box.className = "lightbox";
-  box.innerHTML = `<button aria-label="Close">×</button><img src="${esc(card.dataset.full)}" alt="">`;
-  document.body.appendChild(box);
-  requestAnimationFrame(()=>box.classList.add("show"));
-  box.onclick = ev => { if(ev.target===box || ev.target.tagName==="BUTTON") box.remove(); };
-});
+
 
 });

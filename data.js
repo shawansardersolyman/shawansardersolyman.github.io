@@ -53,4 +53,11 @@ const SITE = {
     { name: "WhatsApp", icon: "whatsapp", url: "" },
     { name: "Email", icon: "email", url: "" }
   ]
+
+  // Optional image captions. Filename based.
+  achievementInfo: {},
+  momentInfo: {},
+  placeInfo: {},
+  buildInfo: {}
+
 };

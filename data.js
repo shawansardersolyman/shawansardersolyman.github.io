@@ -53,10 +53,4 @@ const SITE = {
     { name: "WhatsApp", icon: "whatsapp", url: "" },
     { name: "Email", icon: "email", url: "" }
   ]
-,
-  achievementInfo: {},
-  momentInfo: {},
-  placeInfo: {},
-  buildInfo: {}
 };
-

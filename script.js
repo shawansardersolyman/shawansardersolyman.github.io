@@ -38,28 +38,7 @@ async function loadAutoPhotos(){
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-
-(async function startWebsite(){
-  // Render identity content first. Gallery loads independently.
-  $("#heroName").textContent = SITE.fullName;
-  $("#heroIntro").textContent = SITE.heroIntro;
-  $("#aboutText").textContent = SITE.about;
-
-  const profile = $("#profileImage");
-  if(profile){
-    profile.src = SITE.profileImage || "assets/profile.jpg";
-    profile.onerror = () => {
-      profile.style.display="none";
-      const f=$("#profileFallback");
-      if(f) f.style.display="flex";
-    };
-  }
-
-  $("#heroYear").textContent = new Date().getFullYear();
-  $("#year").textContent = new Date().getFullYear();
-
-  loadAutoPhotos().then(()=>{
-
+loadAutoPhotos().then(()=>{
 $("#heroName").textContent = SITE.fullName;
 $("#heroIntro").textContent = SITE.heroIntro;
 $("#aboutText").textContent = SITE.about;
@@ -168,6 +147,4 @@ document.addEventListener("click", e => {
   document.body.appendChild(box);
   requestAnimationFrame(()=>box.classList.add("show"));
   box.onclick = ev => { if(ev.target===box || ev.target.tagName==="BUTTON") box.remove(); };
-});
-
 });

@@ -134,3 +134,85 @@ body{
     overflow-x:hidden;
     max-width:100%;
 }
+
+/* ===== Gallery Smooth Animation ===== */
+
+.v7-gallery-item{
+    animation: galleryFade .45s ease both;
+}
+
+
+@keyframes galleryFade{
+
+    from{
+        opacity:0;
+        transform:translateY(25px) scale(.97);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+}
+
+
+/* View Button Premium Style */
+
+.v7-gallery-more button{
+
+    position:relative;
+    overflow:hidden;
+    transition:
+    transform .3s ease,
+    background .3s ease,
+    color .3s ease,
+    border-color .3s ease;
+
+}
+
+
+.v7-gallery-more button:hover{
+
+    transform:translateY(-4px);
+    border-color:var(--accent);
+    color:var(--accent);
+
+}
+
+
+.v7-gallery-more button:active{
+
+    transform:scale(.95);
+
+}
+
+
+/* Smooth image appearance */
+
+.v7-gallery-item img{
+
+    transition:
+    transform .5s cubic-bezier(.2,.7,.2,1),
+    filter .4s ease;
+
+}
+
+
+.v7-gallery-item:hover img{
+
+    transform:scale(1.04);
+    filter:saturate(1.08);
+
+}
+
+
+/* Mobile optimization */
+
+@media(max-width:850px){
+
+    .v7-gallery-item{
+        animation-duration:.35s;
+    }
+
+}

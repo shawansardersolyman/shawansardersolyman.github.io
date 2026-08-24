@@ -30,7 +30,15 @@ name: "Shawan",
 
   /* Optional image titles. Match the exact filename. */
   achievementInfo: {
-    // "award-01.jpg": { title: "National Robotics Competition", meta: "2023 · 1st Place" }
+    "award-01.jpg": { 
+  title: "Bangabandhu Creative Talent Hunt Competition", 
+  meta: "2023 · Science Champion at Barishal District Level" 
+},
+
+"award-02.jpg": { 
+  title: "43rd National Science and Technology Week", 
+  meta: "2023 · 1st Runner-up at Barishal District Level" 
+},
   },
   momentInfo: {
     // "moment-01.jpg": { title: "A memorable day", meta: "2024" }

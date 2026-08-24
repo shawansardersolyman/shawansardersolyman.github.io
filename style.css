@@ -504,3 +504,49 @@ body{
     }
 
 }
+
+/* =================================
+   MOBILE TOUCH EFFECT
+================================= */
+
+@media(max-width:850px){
+
+    .achievement-card,
+    .place-card,
+    .build-card,
+    .v7-gallery-item,
+    .social,
+    .primary-btn{
+
+        transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+
+    }
+
+
+    .achievement-card:active,
+    .place-card:active,
+    .build-card:active,
+    .v7-gallery-item:active{
+
+        transform:scale(.97);
+
+        box-shadow:
+        0 12px 35px rgba(216,255,62,.18),
+        0 8px 25px rgba(0,0,0,.4);
+
+    }
+
+
+    .primary-btn:active,
+    .v7-gallery-more button:active{
+
+        transform:scale(.94);
+
+        box-shadow:
+        0 0 30px rgba(216,255,62,.35);
+
+    }
+
+}

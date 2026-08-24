@@ -121,10 +121,10 @@ mediaInfo: {
   builds: [], // Auto-loaded from assets/builds/
 
   now: [
-    "Exploring new ideas",
-    "Building personal projects",
-    "Learning something useful",
-    "Making room for better things"
+    "Pursuing my English Honours degree",
+    "Exploring digital marketing and research",
+    "Developing new skills",
+    "Building ideas for a better future"
   ],
 
   /* Put a real URL only for platforms you want to show. */

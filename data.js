@@ -89,9 +89,27 @@ name: "Shawan",
   buildInfo: {
     // "project-01.jpg": { title: "Line Following Robot", meta: "Robotics · 2023" }
   },
+   
 mediaInfo: {
-   // "media-01.jpg":{ title:"Featured in Newspaper", meta:"2023 · Media Recognition" }
+ "media-01.jpg":{ 
+   title:"Featured in Newspaper", 
+   meta:"2023 · Media Recognition" 
+ },
 
+    "media-02.jpg":{ 
+   title:"Featured in Newspaper", 
+   meta:"2023 · Media Recognition" 
+ },
+
+    "media-03.jpg":{ 
+   title:"Featured in Newspaper", 
+   meta:"2023 · Media Recognition" 
+ },
+
+    "media-04.jpg":{ 
+   title:"Featured in Newspaper", 
+   meta:"2023 · Media Recognition" 
+ },
 },
   /* Personal, event, robotics and memorable photos */
   moments: [], // Auto-loaded from assets/moments/

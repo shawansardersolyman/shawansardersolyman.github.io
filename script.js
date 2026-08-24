@@ -40,7 +40,15 @@ const GALLERIES = {
     max: 100,
     container: "#buildGrid",
     info: "buildInfo"
-  }
+  },
+
+   media: {
+    folder: "assets/media/",
+    prefix: "media-",
+    max: 100,
+    container: "#mediaGrid",
+    info: "mediaInfo"
+}
 
 };
 

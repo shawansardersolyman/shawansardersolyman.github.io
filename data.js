@@ -61,12 +61,12 @@ name: "Shawan",
   /* Put a real URL only for platforms you want to show. */
   socials: [
     { name: "Facebook", icon: "facebook", url: "https://www.facebook.com/ShawanSarderSolyman" },
-    { name: "Instagram", icon: "instagram", url: "" },
+    { name: "Instagram", icon: "instagram", url: "https://www.instagram.com/shawan_sarder_solyman" },
     { name: "LinkedIn", icon: "linkedin", url: "" },
     { name: "GitHub", icon: "github", url: "" },
     { name: "YouTube", icon: "youtube", url: "" },
     { name: "Telegram", icon: "telegram", url: "" },
     { name: "WhatsApp", icon: "whatsapp", url: "" },
-    { name: "Email", icon: "email", url: "" }
+    { name: "Email", icon: "email", url: "shawansardersolyman@gmail.com" }
   ]
 };

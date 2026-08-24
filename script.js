@@ -450,6 +450,11 @@ function updateLightbox() {
     info.title || "";
 
 
+  /*
+    Title and information are shown
+    ONLY inside the lightbox.
+  */
+
   title.textContent =
     info.title || "";
 
@@ -535,6 +540,16 @@ function closeLightbox() {
 
 /* =========================================================
    CREATE GALLERY CARDS
+   =========================================================
+   
+   IMPORTANT:
+   Gallery thumbnails now show ONLY the image.
+   
+   Title / meta / description are NOT shown
+   over the image.
+   
+   They will appear inside the lightbox
+   after clicking the image.
    ========================================================= */
 
 function createGalleryCards(
@@ -555,9 +570,6 @@ function createGalleryCards(
       const title =
         info.title || "";
 
-      const meta =
-        info.meta || "";
-
 
       return `
 
@@ -574,36 +586,6 @@ function createGalleryCards(
             alt="${esc(title)}"
             loading="lazy"
           >
-
-          ${
-            title || meta
-              ? `
-                <span class="v7-gallery-overlay">
-
-                  ${
-                    title
-                      ? `
-                        <strong>
-                          ${esc(title)}
-                        </strong>
-                      `
-                      : ""
-                  }
-
-                  ${
-                    meta
-                      ? `
-                        <small>
-                          ${esc(meta)}
-                        </small>
-                      `
-                      : ""
-                  }
-
-                </span>
-              `
-              : ""
-          }
 
         </button>
 

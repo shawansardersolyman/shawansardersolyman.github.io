@@ -48,90 +48,50 @@ footer{border-top:1px solid var(--line);padding:25px 5vw;display:flex;justify-co
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{transition:none}.achievement-card:hover,.build-card:hover,.social:hover{transform:none}}
 
-v7-gallery{
+
+    /* FINAL V7 GALLERY */
+
+.v7-gallery{
+    width:100%;
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:12px;
+    gap:14px;
 }
+
 
 .v7-gallery-item{
     position:relative;
-    height:260px;
+    width:100%;
+    aspect-ratio:4/3;
     overflow:hidden;
     border-radius:18px;
     background:var(--panel);
     cursor:pointer;
 }
 
+
 .v7-gallery-item img{
     width:100%;
     height:100%;
     display:block;
     object-fit:cover;
-    transition:transform .55s ease, filter .35s ease;
 }
+
 
 .v7-gallery-item:hover img{
-    transform:scale(1.045);
-    filter:saturate(1.05);
-}
-
-.v7-gallery-overlay{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    padding:55px 18px 15px;
-    background:linear-gradient(transparent,rgba(0,0,0,.8));
-    color:white;
-    z-index:2;
-}
-
-.v7-gallery-overlay strong{
-    display:block;
-    font:700 15px Manrope;
-}
-
-.v7-gallery-overlay small{
-    display:block;
-    margin-top:4px;
-    font-size:11px;
+    transform:scale(1.04);
+    transition:.4s ease;
 }
 
 
-/* Lightbox */
-
-.v7-lightbox{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    background:rgba(0,0,0,.94);
-    opacity:0;
-    visibility:hidden;
+/* remove old featured size */
+.v7-gallery-item:nth-child(n){
+    grid-row:auto;
+    grid-column:auto;
 }
 
-.v7-lightbox.open{
-    opacity:1;
-    visibility:visible;
-}
 
-.v7-lb-content{
-    max-width:1100px;
-    width:90vw;
-    text-align:center;
-}
-
-.v7-lb-content img{
-    max-width:100%;
-    max-height:80vh;
-    object-fit:contain;
-    border-radius:14px;
-}
-
+/* View all button */
 
 .v7-gallery-more{
     display:flex;
@@ -139,8 +99,9 @@ v7-gallery{
     margin-top:25px;
 }
 
+
 .v7-gallery-more button{
-    padding:12px 20px;
+    padding:12px 24px;
     border-radius:50px;
     border:1px solid var(--line);
     background:var(--panel);
@@ -159,8 +120,17 @@ v7-gallery{
 
 
     .v7-gallery-item{
-        height:180px;
-        border-radius:15px;
+        aspect-ratio:1/1;
+        border-radius:14px;
     }
 
+}
+
+
+/* Prevent horizontal movement */
+
+html,
+body{
+    overflow-x:hidden;
+    max-width:100%;
 }

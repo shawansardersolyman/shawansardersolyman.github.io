@@ -1,10 +1,11 @@
 /* =========================================================
    SHAWAN PERSONAL WEBSITE
-   SCRIPT.JS
+   Main JavaScript
    ========================================================= */
 
+
 /* =========================================================
-   AUTO IMAGE FOLDERS
+   AUTOMATIC IMAGE FOLDERS
    ========================================================= */
 
 const AUTO_FOLDERS = {
@@ -35,7 +36,31 @@ const AUTO_FOLDERS = {
 
 
 /* =========================================================
-   IMAGE FINDER
+   SAFE SELECTOR
+   ========================================================= */
+
+const $ = selector => document.querySelector(selector);
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+const esc = value =>
+  String(value ?? "").replace(
+    /[&<>"']/g,
+    char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char])
+  );
+
+
+/* =========================================================
+   FIND IMAGES AUTOMATICALLY
    ========================================================= */
 
 async function findImages(cfg) {
@@ -44,13 +69,14 @@ async function findImages(cfg) {
 
   for (let i = 1; i <= cfg.max; i++) {
 
-    const n = String(i).padStart(2, "0");
+    const number = String(i).padStart(2, "0");
 
     let found = "";
 
     for (const ext of ["jpg", "jpeg", "png", "webp"]) {
 
-      const url = `${cfg.dir}${cfg.prefix}${n}.${ext}`;
+      const url =
+        `${cfg.dir}${cfg.prefix}${number}.${ext}`;
 
       const ok = await new Promise(resolve => {
 
@@ -65,11 +91,8 @@ async function findImages(cfg) {
       });
 
       if (ok) {
-
         found = url;
-
         break;
-
       }
 
     }
@@ -87,17 +110,21 @@ async function findImages(cfg) {
   }
 
   return out;
-
 }
 
 
 /* =========================================================
-   AUTO PHOTO LOADER
+   AUTO LOAD PHOTOS INTO SITE DATA
    ========================================================= */
 
 async function loadAutoPhotos() {
 
-  const [a, m, p, b] = await Promise.all([
+  const [
+    achievements,
+    moments,
+    places,
+    builds
+  ] = await Promise.all([
 
     findImages(AUTO_FOLDERS.achievements),
 
@@ -110,64 +137,81 @@ async function loadAutoPhotos() {
   ]);
 
 
-  if (!Array.isArray(SITE.achievements) || !SITE.achievements.length) {
+  if (!Array.isArray(SITE.achievements)) {
+    SITE.achievements = [];
+  }
 
-    SITE.achievements = a.map((image, i) => ({
+  if (!Array.isArray(SITE.moments)) {
+    SITE.moments = [];
+  }
 
-      title: `Achievement ${String(i + 1).padStart(2, "0")}`,
+  if (!Array.isArray(SITE.places)) {
+    SITE.places = [];
+  }
 
-      meta: "ACHIEVEMENT",
+  if (!Array.isArray(SITE.builds)) {
+    SITE.builds = [];
+  }
 
-      text: "",
 
-      image
+  if (!SITE.achievements.length) {
 
-    }));
+    SITE.achievements =
+      achievements.map((image, i) => ({
+        title:
+          `Achievement ${String(i + 1).padStart(2, "0")}`,
+
+        meta: "ACHIEVEMENT",
+
+        text: "",
+
+        image
+      }));
 
   }
 
 
-  if (!Array.isArray(SITE.moments) || !SITE.moments.length) {
+  if (!SITE.moments.length) {
 
-    SITE.moments = m.map((image, i) => ({
+    SITE.moments =
+      moments.map((image, i) => ({
+        caption:
+          `Moment ${String(i + 1).padStart(2, "0")}`,
 
-      caption: `Moment ${String(i + 1).padStart(2, "0")}`,
-
-      image
-
-    }));
-
-  }
-
-
-  if (!Array.isArray(SITE.places) || !SITE.places.length) {
-
-    SITE.places = p.map((image, i) => ({
-
-      place: `Place ${String(i + 1).padStart(2, "0")}`,
-
-      note: "",
-
-      image
-
-    }));
+        image
+      }));
 
   }
 
 
-  if (!Array.isArray(SITE.builds) || !SITE.builds.length) {
+  if (!SITE.places.length) {
 
-    SITE.builds = b.map((image, i) => ({
+    SITE.places =
+      places.map((image, i) => ({
+        place:
+          `Place ${String(i + 1).padStart(2, "0")}`,
 
-      title: `Project ${String(i + 1).padStart(2, "0")}`,
+        note: "",
 
-      type: "PROJECT",
+        image
+      }));
 
-      text: "",
+  }
 
-      image
 
-    }));
+  if (!SITE.builds.length) {
+
+    SITE.builds =
+      builds.map((image, i) => ({
+        title:
+          `Project ${String(i + 1).padStart(2, "0")}`,
+
+        type: "PROJECT",
+
+        text: "",
+
+        image
+      }));
 
   }
 
@@ -175,27 +219,7 @@ async function loadAutoPhotos() {
 
 
 /* =========================================================
-   HELPERS
-   ========================================================= */
-
-const $ = s => document.querySelector(s);
-
-const esc = s =>
-  String(s ?? "").replace(
-    /[&<>"']/g,
-    c =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[c])
-  );
-
-
-/* =========================================================
-   GALLERY CONFIG
+   GALLERY CONFIGURATION
    ========================================================= */
 
 const GALLERY_CONFIG = {
@@ -251,7 +275,28 @@ const galleryState = {
 
 
 /* =========================================================
-   LIGHTBOX
+   GET IMAGE INFO
+   ========================================================= */
+
+function galleryInfo(section, file) {
+
+  const cfg = GALLERY_CONFIG[section];
+
+  if (!cfg) return {};
+
+  const map =
+    SITE[cfg.info] || {};
+
+  const filename =
+    file.split("/").pop();
+
+  return map[filename] || {};
+
+}
+
+
+/* =========================================================
+   CREATE LIGHTBOX
    ========================================================= */
 
 function ensureLightbox() {
@@ -263,113 +308,133 @@ function ensureLightbox() {
     "beforeend",
 
     `
-    <div
-      class="v7-lightbox"
-      id="v7Lightbox"
-      aria-hidden="true"
-    >
-
-      <button
-        class="v7-lb-close"
-        id="v7LbClose"
-        aria-label="Close"
+      <div
+        class="v7-lightbox"
+        id="v7Lightbox"
+        aria-hidden="true"
       >
-        ×
-      </button>
 
-      <button
-        class="v7-lb-arrow v7-lb-prev"
-        id="v7LbPrev"
-        aria-label="Previous"
-      >
-        ‹
-      </button>
-
-      <div class="v7-lb-content">
-
-        <img
-          id="v7LbImage"
-          alt=""
+        <button
+          class="v7-lb-close"
+          id="v7LbClose"
+          aria-label="Close"
         >
+          ×
+        </button>
 
-        <div class="v7-lb-caption">
+        <button
+          class="v7-lb-arrow v7-lb-prev"
+          id="v7LbPrev"
+          aria-label="Previous"
+        >
+          ‹
+        </button>
 
-          <strong id="v7LbTitle"></strong>
+        <div class="v7-lb-content">
 
-          <span id="v7LbMeta"></span>
+          <img
+            id="v7LbImage"
+            alt=""
+          >
+
+          <div class="v7-lb-caption">
+
+            <strong id="v7LbTitle"></strong>
+
+            <span id="v7LbMeta"></span>
+
+          </div>
 
         </div>
 
+        <button
+          class="v7-lb-arrow v7-lb-next"
+          id="v7LbNext"
+          aria-label="Next"
+        >
+          ›
+        </button>
+
       </div>
-
-      <button
-        class="v7-lb-arrow v7-lb-next"
-        id="v7LbNext"
-        aria-label="Next"
-      >
-        ›
-      </button>
-
-    </div>
     `
   );
 
 
-  $("#v7LbClose").onclick = closeLightbox;
-
-  $("#v7LbPrev").onclick = () =>
-    moveLightbox(-1);
-
-  $("#v7LbNext").onclick = () =>
-    moveLightbox(1);
+  $("#v7LbClose").onclick =
+    closeLightbox;
 
 
-  $("#v7Lightbox").onclick = e => {
+  $("#v7LbPrev").onclick =
+    () => moveLightbox(-1);
 
-    if (e.target.id === "v7Lightbox") {
 
-      closeLightbox();
+  $("#v7LbNext").onclick =
+    () => moveLightbox(1);
+
+
+  $("#v7Lightbox").onclick =
+    event => {
+
+      if (
+        event.target.id ===
+        "v7Lightbox"
+      ) {
+
+        closeLightbox();
+
+      }
+
+    };
+
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      const box =
+        $("#v7Lightbox");
+
+      if (
+        !box ||
+        !box.classList.contains("open")
+      ) {
+        return;
+      }
+
+
+      if (event.key === "Escape") {
+
+        closeLightbox();
+
+      }
+
+
+      if (event.key === "ArrowLeft") {
+
+        moveLightbox(-1);
+
+      }
+
+
+      if (event.key === "ArrowRight") {
+
+        moveLightbox(1);
+
+      }
 
     }
-
-  };
-
-
-  document.addEventListener("keydown", e => {
-
-    const box = $("#v7Lightbox");
-
-    if (!box?.classList.contains("open")) return;
-
-    if (e.key === "Escape") {
-
-      closeLightbox();
-
-    }
-
-    if (e.key === "ArrowLeft") {
-
-      moveLightbox(-1);
-
-    }
-
-    if (e.key === "ArrowRight") {
-
-      moveLightbox(1);
-
-    }
-
-  });
+  );
 
 
-  let sx = 0;
+  let startX = 0;
 
 
   $("#v7Lightbox").addEventListener(
     "touchstart",
-    e => {
+    event => {
 
-      sx = e.changedTouches[0].screenX;
+      startX =
+        event.changedTouches[0].screenX;
 
     },
     {
@@ -380,10 +445,12 @@ function ensureLightbox() {
 
   $("#v7Lightbox").addEventListener(
     "touchend",
-    e => {
+    event => {
 
       const dx =
-        e.changedTouches[0].screenX - sx;
+        event.changedTouches[0].screenX -
+        startX;
+
 
       if (Math.abs(dx) > 45) {
 
@@ -406,26 +473,36 @@ function ensureLightbox() {
    OPEN LIGHTBOX
    ========================================================= */
 
-function openLightbox(items, section, index) {
+function openLightbox(
+  items,
+  section,
+  index
+) {
 
   ensureLightbox();
 
-  galleryState.items = items;
+  galleryState.items =
+    items;
 
-  galleryState.section = section;
+  galleryState.section =
+    section;
 
-  galleryState.index = index;
+  galleryState.index =
+    index;
 
   updateLightbox();
 
-  $("#v7Lightbox").classList.add("open");
+  $("#v7Lightbox")
+    .classList.add("open");
 
-  $("#v7Lightbox").setAttribute(
-    "aria-hidden",
-    "false"
-  );
+  $("#v7Lightbox")
+    .setAttribute(
+      "aria-hidden",
+      "false"
+    );
 
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow =
+    "hidden";
 
 }
 
@@ -451,33 +528,46 @@ function updateLightbox() {
     );
 
 
-  $("#v7LbImage").src = file;
+  const image =
+    $("#v7LbImage");
 
-  $("#v7LbImage").alt =
+  const title =
+    $("#v7LbTitle");
+
+  const meta =
+    $("#v7LbMeta");
+
+
+  image.src =
+    file;
+
+  image.alt =
     info.title || "";
 
 
-  $("#v7LbTitle").textContent =
+  title.textContent =
     info.title || "";
 
 
-  $("#v7LbMeta").textContent =
+  meta.textContent =
     info.meta ||
     info.text ||
     info.note ||
     "";
 
 
-  $("#v7LbTitle").style.display =
+  title.style.display =
     info.title
       ? "block"
       : "none";
 
 
-  $("#v7LbMeta").style.display =
-    info.meta ||
-    info.text ||
-    info.note
+  meta.style.display =
+    (
+      info.meta ||
+      info.text ||
+      info.note
+    )
       ? "block"
       : "none";
 
@@ -490,18 +580,18 @@ function updateLightbox() {
 
 function moveLightbox(delta) {
 
-  const n =
+  const total =
     galleryState.items.length;
 
-  if (!n) return;
+  if (!total) return;
 
 
   galleryState.index =
     (
       galleryState.index +
       delta +
-      n
-    ) % n;
+      total
+    ) % total;
 
 
   updateLightbox();
@@ -531,42 +621,23 @@ function closeLightbox() {
   }
 
 
-  document.body.style.overflow = "";
+  document.body.style.overflow =
+    "";
 
 }
 
 
 /* =========================================================
-   GALLERY INFO
+   CREATE GALLERY CARDS
    ========================================================= */
 
-function galleryInfo(section, file) {
+function galleryCards(
+  section,
+  items
+) {
 
-  const cfg =
-    GALLERY_CONFIG[section];
-
-
-  const map =
-    SITE[cfg.info] || {};
-
-
-  const filename =
-    file.split("/").pop();
-
-
-  return map[filename] || {};
-
-}
-
-
-/* =========================================================
-   GALLERY CARDS
-   ========================================================= */
-
-function galleryCards(section, items) {
-
-  return items
-    .map((file, i) => {
+  return items.map(
+    (file, index) => {
 
       const info =
         galleryInfo(
@@ -621,8 +692,8 @@ function galleryCards(section, items) {
 
       `;
 
-    })
-    .join("");
+    }
+  ).join("");
 
 }
 
@@ -631,52 +702,57 @@ function galleryCards(section, items) {
    RENDER GALLERY
    ========================================================= */
 
-function renderGallery(section, items) {
+function renderGallery(
+  section,
+  items
+) {
 
   const cfg =
     GALLERY_CONFIG[section];
 
 
-  const el =
+  const element =
     $(cfg.container);
 
 
-  if (!el) return;
+  if (!element) return;
 
 
-  el.className =
+  element.className =
     "v7-gallery";
 
 
-  const visibleItems =
+  const firstItems =
     items.slice(0, 9);
 
 
-  el.innerHTML =
+  element.innerHTML =
     galleryCards(
       section,
-      visibleItems
+      firstItems
     );
 
 
   [
-    ...el.querySelectorAll(
+    ...element.querySelectorAll(
       ".v7-gallery-item"
     )
-  ].forEach((b, i) => {
+  ].forEach(
+    (button, index) => {
 
-    b.onclick = () =>
-      openLightbox(
-        items,
-        section,
-        i
-      );
+      button.onclick =
+        () => openLightbox(
+          items,
+          section,
+          index
+        );
 
-  });
+    }
+  );
 
 
   const oldMore =
-    el.nextElementSibling;
+    element.nextElementSibling;
 
 
   if (
@@ -694,7 +770,9 @@ function renderGallery(section, items) {
   if (items.length > 9) {
 
     const more =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     more.className =
@@ -710,10 +788,11 @@ function renderGallery(section, items) {
     `;
 
 
-    more.querySelector("button").onclick =
-      () => {
+    more
+      .querySelector("button")
+      .onclick = () => {
 
-        el.innerHTML =
+        element.innerHTML =
           galleryCards(
             section,
             items
@@ -721,19 +800,21 @@ function renderGallery(section, items) {
 
 
         [
-          ...el.querySelectorAll(
+          ...element.querySelectorAll(
             ".v7-gallery-item"
           )
-        ].forEach((b, i) => {
+        ].forEach(
+          (button, index) => {
 
-          b.onclick = () =>
-            openLightbox(
-              items,
-              section,
-              i
-            );
+            button.onclick =
+              () => openLightbox(
+                items,
+                section,
+                index
+              );
 
-        });
+          }
+        );
 
 
         more.remove();
@@ -741,7 +822,7 @@ function renderGallery(section, items) {
       };
 
 
-    el.after(more);
+    element.after(more);
 
   }
 
@@ -749,7 +830,7 @@ function renderGallery(section, items) {
 
 
 /* =========================================================
-   LOAD GALLERIES
+   LOAD ALL GALLERIES
    ========================================================= */
 
 async function loadV7Galleries() {
@@ -763,19 +844,26 @@ async function loadV7Galleries() {
       Object.entries(
         GALLERY_CONFIG
       ).map(
-        async ([section, cfg]) => [
+        async ([section, cfg]) => {
 
-          section,
+          const images =
+            await findImages(cfg);
 
-          await findImages(cfg)
+          return [
+            section,
+            images
+          ];
 
-        ]
+        }
       )
 
     );
 
 
-  for (const [section, images] of results) {
+  for (
+    const [section, images]
+    of results
+  ) {
 
     renderGallery(
       section,
@@ -794,539 +882,544 @@ async function loadV7Galleries() {
 const icons = {
 
   facebook:
-    '<svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.6-1.6h1.7V3.8c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H7.7v3h2.7v8h3.1Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.6-1.6h1.7V3.8c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H7.7v3h2.7v8h3.1Z"/></svg>',
 
   instagram:
-    '<svg viewBox="0 0 24 24"><path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm0 2A3.2 3.2 0 0 0 4 7.2v9.6A3.2 3.2 0 0 0 7.2 20h9.6a3.2 3.2 0 0 0 3.2-3.2V7.2A3.2 3.2 0 0 0 16.8 4H7.2Zm9.9 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3-3Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm0 2A3.2 3.2 0 0 0 4 7.2v9.6A3.2 3.2 0 0 0 7.2 20h9.6a3.2 3.2 0 0 0 3.2-3.2V7.2A3.2 3.2 0 0 0 16.8 4H7.2Zm9.9 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>',
 
   linkedin:
-    '<svg viewBox="0 0 24 24"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm6 0h3.8v1.5h.1c.5-.9 1.8-1.9 3.8-1.9 4.1 0 4.9 2.6 4.9 6v5.4h-4v-4.8c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21H9V10Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm6 0h3.8v1.5h.1c.5-.9 1.8-1.9 3.8-1.9 4.1 0 4.9 2.6 4.9 6v5.4h-4v-4.8c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21H9V10Z"/></svg>',
 
   github:
-    '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 0 1.5 1 1 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.6-1.4-2.2-.2-4.5-1.1-4.5-4.8 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.7 9.7 0 0 1 5.1 0c2-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.7-2.3 4.6-4.5 4.8.4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 0 1.5 1 1 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.6-1.4-2.2-.2-4.5-1.1-4.5-4.8 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.7 9.7 0 0 1 5.1 0c2-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.7-2.3 4.6-4.5 4.8.4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z"/></svg>',
 
   youtube:
-    '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.9V8.1l6.5 3.9-6.5 3.9Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.9V8.1l6.5 3.9-6.5 3.9Z"/></svg>',
 
   telegram:
-    '<svg viewBox="0 0 24 24"><path d="m21.8 3.3-3.1 17.4c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 14.2l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.6 2.9c.9-.3 1.7.2 1.2.4Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="m21.8 3.3-3.1 17.4c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 14.2l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.6 2.9c.9-.3 1.7.2 1.2.4Z"/></svg>',
 
   whatsapp:
-    '<svg viewBox="0 0 24 24"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.5 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6.1-3.5-8.3ZM12.1 21.5h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.2-.4a9.8 9.8 0 1 1 8.5 4.7Zm5.4-7.4c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.5-.7-2.5-1.3-3.5-2.9-.3-.5.3-.4.8-1.4.1-.2 0-.4 0-.5 0-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3.1 4.9 4.3 1.8.8 2.5.9 3.4.8.5-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4Z"/></svg>',
+  '<svg viewBox="0 0 24 24"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.5 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6.1-3.5-8.3ZM12.1 21.5h-.1c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.2-.4a9.8 9.8 0 1 1 8.5 4.7Zm5.4-7.4c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.5-.7-2.5-1.3-3.5-2.9-.3-.5.3-.4.8-1.4.1-.2 0-.4 0-.5 0-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3.1 4.9 4.3 1.8.8 2.5.9 3.4.8.5-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.4Z"/></svg>',
 
   email:
-    '<svg viewBox="0 0 24 24"><path d="M2.5 5h19A2.5 2.5 0 0 1 24 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-19A2.5 2.5 0 0 1 0 16.5v-9A2.5 2.5 0 0 1 2.5 5Zm0 2a.5.5 0 0 0-.5.5v.2l10 6.2 10-6.2v-.2a.5.5 0 0 0-.5-.5h-19Zm19.5 3-8.9 5.5a2 2 0 0 1-2.1 0L2 10v6.5a.5.5 0 0 0 .5.5h19a.5.5 0 0 0 .5-.5V10Z"/></svg>'
+  '<svg viewBox="0 0 24 24"><path d="M2.5 5h19A2.5 2.5 0 0 1 24 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-19A2.5 2.5 0 0 1 0 16.5v-9A2.5 2.5 0 0 1 2.5 5Zm0 2a.5.5 0 0 0-.5.5v.2l10 6.2 10-6.2v-.2a.5.5 0 0 0-.5-.5h-19Zm19.5 3-8.9 5.5a2 2 0 0 1-2.1 0L2 10v6.5a.5.5 0 0 0 .5.5h19a.5.5 0 0 0 .5-.5V10Z"/></svg>'
 
 };
 
 
 /* =========================================================
-   URL NORMALIZER
+   NORMALIZE SOCIAL URL
    ========================================================= */
 
 const normalizeUrl = url => {
 
-  const v =
+  const value =
     String(url || "").trim();
 
-
-  if (!v) return "";
-
+  if (!value) return "";
 
   if (
-    /^(https?:\/\/|mailto:|tel:)/i.test(v)
+    /^(https?:\/\/|mailto:|tel:)/i
+      .test(value)
   ) {
-
-    return v;
-
+    return value;
   }
 
-
-  return "https://" + v;
+  return "https://" + value;
 
 };
 
 
 /* =========================================================
-   SOCIAL LINKS
+   INITIALIZE PAGE CONTENT
    ========================================================= */
 
-function renderSocials() {
+async function initializePage() {
 
-  const socials =
-    Array.isArray(SITE.socials)
-      ? SITE.socials
-      : [];
+  try {
 
-
-  const active =
-    socials
-
-      .map(x => ({
-        ...x,
-        url: normalizeUrl(x.url)
-      }))
-
-      .filter(x => x.url);
+    /* Load automatic images first */
+    await loadAutoPhotos();
 
 
-  const container =
-    $("#socials");
+    /* Hero */
+    $("#heroName").textContent =
+      SITE.fullName || "";
 
 
-  if (!container) return;
+    $("#heroIntro").textContent =
+      SITE.heroIntro || "";
 
 
-  container.innerHTML =
-    active.length
-
-      ? active
-          .map(
-            x => `
-
-              <a
-                class="social"
-                href="${esc(x.url)}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="${esc(x.name)}"
-              >
-
-                ${
-                  icons[x.icon] ||
-                  icons.email
-                }
-
-                <span>
-                  ${esc(x.name)}
-                </span>
-
-              </a>
-
-            `
-          )
-          .join("")
-
-      : `
-        <span class="social-empty">
-          Your social links will appear here.
-        </span>
-      `;
-
-}
+    /* About */
+    $("#aboutText").textContent =
+      SITE.about || "";
 
 
-/* =========================================================
-   REVEAL ANIMATION
-   ========================================================= */
-
-function setupReveal() {
-
-  const elements =
-    document.querySelectorAll(
-      ".reveal"
-    );
+    /* Profile image */
+    const profile =
+      $("#profileImage");
 
 
-  if (!("IntersectionObserver" in window)) {
+    if (profile) {
 
-    elements.forEach(el =>
-      el.classList.add("visible")
-    );
-
-    return;
-
-  }
+      profile.src =
+        SITE.profileImage ||
+        "assets/profile.jpg";
 
 
-  const observer =
-    new IntersectionObserver(
-      entries => {
+      profile.onerror =
+        () => {
 
-        entries.forEach(e => {
+          profile.style.display =
+            "none";
 
-          if (e.isIntersecting) {
 
-            e.target.classList.add(
-              "visible"
-            );
+          const fallback =
+            $("#profileFallback");
 
-            observer.unobserve(
-              e.target
-            );
+
+          if (fallback) {
+
+            fallback.style.display =
+              "flex";
 
           }
 
-        });
+        };
 
-      },
-      {
-        threshold: 0.1
-      }
-    );
+    }
 
 
-  elements.forEach(el =>
-    observer.observe(el)
-  );
-
-}
+    /* Year */
+    const currentYear =
+      new Date().getFullYear();
 
 
-/* =========================================================
-   THEME
-   ========================================================= */
-
-function setupTheme() {
-
-  const theme =
-    $("#themeToggle");
+    $("#heroYear").textContent =
+      currentYear;
 
 
-  if (!theme) return;
+    $("#year").textContent =
+      currentYear;
 
 
-  if (
-    localStorage.getItem(
-      "shawan-theme"
-    ) === "light"
-  ) {
+    /* =====================================================
+       STORY
+       ===================================================== */
 
-    document.body.classList.add(
-      "light"
-    );
-
-  }
+    const storyList =
+      $("#storyList");
 
 
-  theme.onclick = () => {
+    if (
+      storyList &&
+      Array.isArray(SITE.story)
+    ) {
 
-    document.body.classList.toggle(
-      "light"
-    );
+      storyList.innerHTML =
+        SITE.story.map(
+          (item, index) => `
+
+            <article class="story-item">
+
+              <div class="story-no">
+                ${String(index + 1).padStart(2, "0")}
+              </div>
+
+              <div class="story-year">
+                ${esc(item.year || "")}
+              </div>
+
+              <div>
+
+                <h3>
+                  ${esc(item.title || "")}
+                </h3>
+
+                <p>
+                  ${esc(item.text || "")}
+                </p>
+
+              </div>
+
+            </article>
+
+          `
+        ).join("");
+
+    }
 
 
-    localStorage.setItem(
+    /* =====================================================
+       NOW
+       ===================================================== */
 
-      "shawan-theme",
-
-      document.body.classList.contains(
-        "light"
-      )
-        ? "light"
-        : "dark"
-
-    );
-
-  };
-
-}
+    const nowList =
+      $("#nowList");
 
 
-/* =========================================================
-   MOBILE MENU
-   ========================================================= */
+    if (
+      nowList &&
+      Array.isArray(SITE.now)
+    ) {
 
-function setupMobileMenu() {
+      nowList.innerHTML =
+        SITE.now.map(
+          item => `
 
-  const menu =
-    $("#mobileNav");
+            <div>
+              <span>↗</span>
+              ${esc(item)}
+            </div>
 
-  const menuBtn =
-    $("#menuToggle");
+          `
+        ).join("");
+
+    }
 
 
-  if (!menu || !menuBtn) return;
+    /* =====================================================
+       SOCIALS
+       ===================================================== */
+
+    const socials =
+      $("#socials");
 
 
-  menuBtn.onclick = () => {
+    if (
+      socials &&
+      Array.isArray(SITE.socials)
+    ) {
 
-    const open =
-      menu.classList.toggle(
-        "open"
+      const active =
+        SITE.socials
+          .map(item => ({
+            ...item,
+            url: normalizeUrl(item.url)
+          }))
+          .filter(item => item.url);
+
+
+      socials.innerHTML =
+        active.length
+
+          ? active.map(
+              item => `
+
+                <a
+                  class="social"
+                  href="${esc(item.url)}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="${esc(item.name)}"
+                >
+
+                  ${
+                    icons[item.icon] ||
+                    icons.email
+                  }
+
+                  <span>
+                    ${esc(item.name)}
+                  </span>
+
+                </a>
+
+              `
+            ).join("")
+
+          : `
+              <span class="social-empty">
+                Your social links will appear here.
+              </span>
+            `;
+
+    }
+
+
+    /* =====================================================
+       LOAD GALLERIES
+       ===================================================== */
+
+    await loadV7Galleries();
+
+
+    /* =====================================================
+       REVEAL ANIMATION
+       ===================================================== */
+
+    const observer =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if (
+              entry.isIntersecting
+            ) {
+
+              entry.target
+                .classList
+                .add("visible");
+
+
+              observer.unobserve(
+                entry.target
+              );
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.1
+        }
       );
 
 
-    menuBtn.setAttribute(
-      "aria-expanded",
-      open
-    );
+    document
+      .querySelectorAll(".reveal")
+      .forEach(
+        element =>
+          observer.observe(element)
+      );
 
-  };
+
+    /* Hero should appear immediately */
+    const heroReveal =
+      document.querySelector(
+        ".hero-inner.reveal"
+      );
 
 
-  menu
-    .querySelectorAll("a")
-    .forEach(a => {
+    if (heroReveal) {
 
-      a.onclick = () => {
+      setTimeout(
+        () => {
+          heroReveal.classList.add(
+            "visible"
+          );
+        },
+        100
+      );
 
-        menu.classList.remove(
-          "open"
-        );
+    }
 
-        menuBtn.setAttribute(
-          "aria-expanded",
-          "false"
+
+    /* =====================================================
+       THEME
+       ===================================================== */
+
+    const theme =
+      $("#themeToggle");
+
+
+    if (
+      localStorage.getItem(
+        "shawan-theme"
+      ) === "light"
+    ) {
+
+      document.body
+        .classList
+        .add("light");
+
+    }
+
+
+    if (theme) {
+
+      theme.onclick = () => {
+
+        document.body
+          .classList
+          .toggle("light");
+
+
+        localStorage.setItem(
+          "shawan-theme",
+
+          document.body
+              .classList
+              .contains("light")
+            ? "light"
+            : "dark"
         );
 
       };
 
-    });
-
-}
-
-
-/* =========================================================
-   CURSOR GLOW
-   ========================================================= */
-
-function setupCursorGlow() {
-
-  const glow =
-    document.querySelector(
-      ".cursor-glow"
-    );
-
-
-  if (!glow) return;
-
-
-  window.addEventListener(
-    "pointermove",
-    e => {
-
-      glow.style.left =
-        e.clientX + "px";
-
-      glow.style.top =
-        e.clientY + "px";
-
     }
-  );
-
-}
 
 
-/* =========================================================
-   PROFILE IMAGE
-   ========================================================= */
+    /* =====================================================
+       MOBILE MENU
+       ===================================================== */
 
-function setupProfile() {
-
-  const profile =
-    $("#profileImage");
+    const menu =
+      $("#mobileNav");
 
 
-  if (!profile) return;
+    const menuBtn =
+      $("#menuToggle");
 
 
-  profile.src =
-    SITE.profileImage ||
-    "assets/profile.jpg";
+    if (menu && menuBtn) {
+
+      menuBtn.onclick = () => {
+
+        const open =
+          menu.classList.toggle(
+            "open"
+          );
 
 
-  profile.onerror = () => {
+        menuBtn.setAttribute(
+          "aria-expanded",
+          open
+        );
 
-    profile.style.display =
-      "none";
-
-
-    const fallback =
-      $("#profileFallback");
+      };
 
 
-    if (fallback) {
+      menu
+        .querySelectorAll("a")
+        .forEach(link => {
 
-      fallback.style.display =
-        "flex";
+          link.onclick = () => {
+
+            menu.classList.remove(
+              "open"
+            );
+
+
+            menuBtn.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+          };
+
+        });
 
     }
 
-  };
 
-}
+    /* =====================================================
+       CURSOR GLOW
+       ===================================================== */
 
-
-/* =========================================================
-   CUSTOM LOGO
-   ========================================================= */
-
-function setupLogo() {
-
-  const logo =
-    $("#siteLogo");
-
-  const fallback =
-    $("#logoFallback");
+    const glow =
+      document.querySelector(
+        ".cursor-glow"
+      );
 
 
-  if (!logo) return;
+    if (glow) {
+
+      window.addEventListener(
+        "pointermove",
+        event => {
+
+          glow.style.left =
+            event.clientX + "px";
 
 
-  logo.onerror = () => {
+          glow.style.top =
+            event.clientY + "px";
 
-    logo.style.display =
-      "none";
-
-
-    if (fallback) {
-
-      fallback.style.display =
-        "block";
-
-    }
-
-  };
-
-
-  if (SITE.logo) {
-
-    logo.src =
-      SITE.logo;
-
-  } else {
-
-    logo.style.display =
-      "none";
-
-
-    if (fallback) {
-
-      fallback.style.display =
-        "block";
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   BASIC SITE DATA
-   ========================================================= */
-
-function renderBasicData() {
-
-  $("#heroName").textContent =
-    SITE.fullName || "";
-
-
-  $("#heroIntro").textContent =
-    SITE.heroIntro || "";
-
-
-  $("#aboutText").textContent =
-    SITE.about || "";
-
-
-  $("#heroYear").textContent =
-    new Date().getFullYear();
-
-
-  $("#year").textContent =
-    new Date().getFullYear();
-
-}
-
-
-/* =========================================================
-   REMOVE LOADING SCREEN
-   ========================================================= */
-
-function finishLoading() {
-
-  const loader =
-    $("#pageLoader");
-
-
-  document.body.classList.remove(
-    "app-loading"
-  );
-
-
-  requestAnimationFrame(() => {
-
-    if (loader) {
-
-      loader.classList.add(
-        "hidden"
+        }
       );
 
     }
 
-  });
 
-}
+    /* =====================================================
+       HEADER LOGO FALLBACK
+       ===================================================== */
 
-
-/* =========================================================
-   EMERGENCY FALLBACK
-   Prevents page from remaining invisible if
-   something unexpected happens.
-   ========================================================= */
-
-const emergencyLoaderTimeout =
-  setTimeout(() => {
-
-    finishLoading();
-
-  }, 8000);
+    const headerLogo =
+      $("#headerLogo");
 
 
-/* =========================================================
-   MAIN INITIALIZATION
-   ========================================================= */
-
-async function initSite() {
-
-  try {
-
-    /* Load automatic photos first */
-    await loadAutoPhotos();
+    const headerFallback =
+      $("#headerLogoFallback");
 
 
-    /* Basic information */
-    renderBasicData();
+    if (headerLogo) {
+
+      headerLogo.onerror =
+        () => {
+
+          headerLogo.style.display =
+            "none";
 
 
-    /* Profile */
-    setupProfile();
+          if (headerFallback) {
+
+            headerFallback.style.display =
+              "inline-block";
+
+          }
+
+        };
+
+    }
 
 
-    /* Logo */
-    setupLogo();
+    /* =====================================================
+       LOADING LOGO FALLBACK
+       ===================================================== */
+
+    const loaderLogo =
+      $("#loaderLogo");
 
 
-    /* Social links */
-    renderSocials();
+    const loaderFallback =
+      $("#loaderFallback");
 
 
-    /* Lightbox */
-    ensureLightbox();
+    if (loaderLogo) {
+
+      loaderLogo.onerror =
+        () => {
+
+          loaderLogo.style.display =
+            "none";
 
 
-    /*
-      Load galleries.
-      We wait for this so the initial page
-      doesn't show half-rendered gallery content.
-    */
-    await loadV7Galleries();
+          if (loaderFallback) {
+
+            loaderFallback.style.display =
+              "block";
+
+          }
+
+        };
+
+    }
 
 
-    /* Other interactive features */
-    setupTheme();
+    /* =====================================================
+       PAGE READY
+       ===================================================== */
 
-    setupMobileMenu();
-
-    setupCursorGlow();
-
-    setupReveal();
+    document.body.classList.add(
+      "page-ready"
+    );
 
 
-    /* Make page visible */
-    finishLoading();
+    /* Give browser a moment to paint final content */
+    requestAnimationFrame(() => {
+
+      setTimeout(
+        hidePageLoader,
+        250
+      );
+
+    });
 
 
   } catch (error) {
@@ -1338,15 +1431,19 @@ async function initSite() {
 
 
     /*
-      Even if something fails,
-      don't leave the whole website invisible.
+      Even if something goes wrong,
+      don't leave the visitor stuck
+      on the loading screen.
     */
-    finishLoading();
 
-  } finally {
+    document.body.classList.add(
+      "page-ready"
+    );
 
-    clearTimeout(
-      emergencyLoaderTimeout
+
+    setTimeout(
+      hidePageLoader,
+      300
     );
 
   }
@@ -1355,7 +1452,43 @@ async function initSite() {
 
 
 /* =========================================================
+   HIDE LOADING SCREEN
+   ========================================================= */
+
+function hidePageLoader() {
+
+  const loader =
+    $("#pageLoader");
+
+
+  if (!loader) return;
+
+
+  loader.classList.add(
+    "hide"
+  );
+
+
+  setTimeout(
+    () => {
+
+      if (loader.parentNode) {
+
+        loader.parentNode.removeChild(
+          loader
+        );
+
+      }
+
+    },
+    650
+  );
+
+}
+
+
+/* =========================================================
    START WEBSITE
    ========================================================= */
 
-initSite();
+initializePage();

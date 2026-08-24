@@ -19,10 +19,10 @@ name: "Shawan",
 
   /* Add, remove, or reorder journey items */
   story: [
-    { year: "2021", title: "A chapter worth remembering", text: "Replace this with an important moment from your journey." },
-    { year: "2022", title: "Learning by doing", text: "Add a milestone, competition, project or experience." },
-    { year: "2024", title: "Exploring beyond one field", text: "Add a meaningful personal or professional chapter." },
-    { year: "2026", title: "The next chapter", text: "Write what you are focused on today." }
+    { year: "2019", title: "Beginning My Robotics Journey", text: "Began exploring robotics and gained practical experience through competitions and innovation." },
+    { year: "2021", title: "Learning From Experience", text: "Connected with experienced professionals and gained valuable knowledge and new perspectives." },
+    { year: "2023", title: "Exploring New Horizons", text: "Expanded my interests into digital marketing, research and skill development." },
+    { year: "2026", title: "Building The Future", text: "Pursuing English Honours while continuously learning and creating new opportunities." }
   ],
 
   /* Awards, competitions, certificates, recognitions */

@@ -630,7 +630,6 @@ function connectGalleryButtons(
 /* =========================================================
    RENDER GALLERY
    ========================================================= */
-
 function renderGallery(
   section,
   images

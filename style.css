@@ -48,9 +48,7 @@ footer{border-top:1px solid var(--line);padding:25px 5vw;display:flex;justify-co
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{transition:none}.achievement-card:hover,.build-card:hover,.social:hover{transform:none}}
 
-/* V7 visual galleries */
-
-.v7-gallery{
+v7-gallery{
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
     gap:12px;

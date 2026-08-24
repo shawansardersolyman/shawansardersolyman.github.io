@@ -39,6 +39,46 @@ name: "Shawan",
   title: "43rd National Science and Technology Week", 
   meta: "2023 · 1st Runner-up at Barishal District Level" 
 },
+
+"award-03.jpg": { 
+  title: "43rd National Science and Technology Week", 
+  meta: "2022 · 1st Runner-up at Barishal District Level" 
+},
+
+"award-04.jpg": { 
+  title: "44th National Science and Technology Week", 
+  meta: "2022 · 1st Runner-up at Upazila Level, Barishal District" 
+},
+
+"award-05.jpg": { 
+  title: "", 
+  meta: "" 
+},
+
+"award-06.jpg": { 
+  title: "", 
+  meta: "" 
+},
+
+"award-07.jpg": { 
+  title: "", 
+  meta: "" 
+},
+
+"award-08.jpg": { 
+  title: "", 
+  meta: "" 
+},
+
+"award-09.jpg": { 
+  title: "", 
+  meta: "" 
+},
+
+"award-10.jpg": { 
+  title: "", 
+  meta: "" 
+},
   },
   momentInfo: {
     // "moment-01.jpg": { title: "A memorable day", meta: "2024" }

@@ -710,35 +710,59 @@ function renderGallery(
 
 
   more.innerHTML = `
-
-    <button type="button">
-      View all ${images.length}
-    </button>
-
-  `;
+<button type="button" data-open="false">
+ View all ${images.length}
+</button>
+`;
 
 
-  more
-    .querySelector("button")
-    .onclick = () => {
+ more.querySelector("button").onclick = () => {
 
-      container.innerHTML =
+    const button = more.querySelector("button");
+
+
+    if(button.dataset.open === "true"){
+
+        // show only first 6 images
+        container.innerHTML =
         createGalleryCards(
-          section,
-          images
+            section,
+            images.slice(0,6)
         );
 
 
-      connectGalleryButtons(
+        button.innerHTML =
+        `View all ${images.length}`;
+
+        button.dataset.open = "false";
+
+
+    } else {
+
+
+        // show all images
+        container.innerHTML =
+        createGalleryCards(
+            section,
+            images
+        );
+
+
+        button.innerHTML =
+        "View less";
+
+        button.dataset.open = "true";
+
+    }
+
+
+    connectGalleryButtons(
         container,
         images,
         section
-      );
+    );
 
-
-      more.remove();
-
-    };
+};
 
 
   container.after(more);

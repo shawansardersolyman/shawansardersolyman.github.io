@@ -650,11 +650,11 @@ function renderGallery(
 
 
   /*
-    Show only 9 images initially.
+    Show only 6 images initially.
   */
 
   const visibleImages =
-    images.slice(0, 9);
+    images.slice(0, 6);
 
 
   container.innerHTML =
@@ -693,10 +693,10 @@ function renderGallery(
 
   /*
     No need for View All
-    if there are 9 or fewer images.
+    if there are 6 or fewer images.
   */
 
-  if (images.length <= 9) {
+  if (images.length <= 6) {
     return;
   }
 

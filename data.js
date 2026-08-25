@@ -43,52 +43,52 @@ name: "Shawan",
   meta: "2022 · 1st Runner-up at Barishal District Level" 
 },
 "award-04.png": { 
-  title: "Goila Bahini Award", 
-  meta: "" 
+  title: "Recognition for Robotics Innovation", 
+  meta: "Awarded for Successful Robotics Project Development" 
 },
 "award-05.jpg": { 
-  title: "", 
-  meta: "" 
+  title: "Digital Innovation Fair", 
+  meta: "2023 · 1st Runner-up at Barishal District Level" 
 },
 "award-06.jpg": { 
-  title: "", 
-  meta: "" 
+  title: "44th National Science and Technology Week", 
+  meta: "2022 · 1st Runner-up at Upazila Level, Barishal District" 
 },
 "award-07.jpg": { 
-  title: "", 
-  meta: "" 
+  title: "Digital Innovation Fair", 
+  meta: "2023 · 1st Position at Barishal Upazila Level" 
 },
 "award-08.jpg": { 
-  title: "", 
-  meta: "" 
+  title: "Honour for Robotics Innovation", 
+  meta: "Recognized by Goila Bahini for outstanding contribution to Robotics Development" 
 },
 "award-09.jpg": { 
-  title: "", 
-  meta: "" 
+  title: "42nd National Science and Technology Week", 
+  meta: "2020 · 1st Position at Barishal Upazila Level" 
 },
 "award-10.png": { 
-  title: "", 
-  meta: "" 
+  title: "Bangabandhu Creative Talent Hunt Competition", 
+  meta: "2023 · Science Champion at Barishal Upazila Level" 
 },
 "award-11.png": { 
   title: "44th National Science and Technology Week", 
   meta: "2022 · 1st Runner-up at Upazila Level, Barishal District" 
 },
 "award-12.png": { 
-  title: "", 
-  meta: "" 
+  title: "Digital Innovation Fair", 
+  meta: "2023 · 1st Runner-up at Barishal District Level" 
 },
 "award-13.png": { 
-  title: "", 
-  meta: "" 
+  title: "43rd National Science and Technology Week", 
+  meta: "2022 · Recognized for Science Project Presentation at Barishal District Level" 
 },
 "award-14.png": { 
-  title: "", 
-  meta: "" 
+  title: "Robotics Achievement Award", 
+  meta: "Honored for Outstanding Success in Robotics Development" 
 },
 "award-15.png": { 
-  title: "", 
-  meta: "" 
+  title: "Barishal Through My Eyes – Video Competition", 
+  meta: "2023 · 1st Runner-up at Barishal District Level" 
 },
 
 
@@ -108,14 +108,17 @@ mediaInfo: {
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
  },
+
     "media-02.jpg":{ 
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
  },
+
     "media-03.jpg":{ 
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
  },
+
     "media-04.jpg":{ 
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 

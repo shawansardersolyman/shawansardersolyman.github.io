@@ -34,51 +34,64 @@ name: "Shawan",
   title: "Bangabandhu Creative Talent Hunt Competition", 
   meta: "2023 · Science Champion at Barishal District Level" 
 },
-
 "award-02.jpg": { 
   title: "43rd National Science and Technology Week", 
   meta: "2023 · 1st Runner-up at Barishal District Level" 
 },
-
 "award-03.jpg": { 
   title: "43rd National Science and Technology Week", 
   meta: "2022 · 1st Runner-up at Barishal District Level" 
 },
-
-"award-04.jpg": { 
-  title: "44th National Science and Technology Week", 
-  meta: "2022 · 1st Runner-up at Upazila Level, Barishal District" 
+"award-04.png": { 
+  title: "Goila Bahini Award", 
+  meta: "" 
 },
-
 "award-05.jpg": { 
   title: "", 
   meta: "" 
 },
-
 "award-06.jpg": { 
   title: "", 
   meta: "" 
 },
-
 "award-07.jpg": { 
   title: "", 
   meta: "" 
 },
-
 "award-08.jpg": { 
   title: "", 
   meta: "" 
 },
-
 "award-09.jpg": { 
   title: "", 
   meta: "" 
 },
-
-"award-10.jpg": { 
+"award-10.png": { 
   title: "", 
   meta: "" 
 },
+"award-11.png": { 
+  title: "44th National Science and Technology Week", 
+  meta: "2022 · 1st Runner-up at Upazila Level, Barishal District" 
+},
+"award-12.png": { 
+  title: "", 
+  meta: "" 
+},
+"award-13.png": { 
+  title: "", 
+  meta: "" 
+},
+"award-14.png": { 
+  title: "", 
+  meta: "" 
+},
+"award-15.png": { 
+  title: "", 
+  meta: "" 
+},
+
+
   },
   momentInfo: {
     // "moment-01.jpg": { title: "A memorable day", meta: "2024" }
@@ -95,17 +108,14 @@ mediaInfo: {
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
  },
-
     "media-02.jpg":{ 
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
  },
-
     "media-03.jpg":{ 
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
  },
-
     "media-04.jpg":{ 
    title:"Featured in Newspaper", 
    meta:"2023 · Media Recognition" 
